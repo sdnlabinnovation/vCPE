@@ -1,0 +1,43 @@
+{"auth": { "passwordCredentials": {"username": "sdnadmin", "password": "openstack@123"}}}
+https://192.168.0.3:5000/v2.0/tokens
+
+https://www.youtube.com/watch?v=XwNsDcVTBrI
+
+ nova --os-username sdnadmin --os-password openstack@123 --insecure image-list
+ 
+ //Creating an instance
+  nova --os-username sdnadmin --os-password openstack@123 --insecure boot --image 6a95a792-eb77-4072-ba61-017bf3f95c64 --flavor 4 --nic net-id=cd147ccf-1ac1-4e47-9d0f-397f8ee8234e --key_name secretkey OpenstackTest
+  
+  nova --os-username sdnadmin --os-password openstack@123 --insecure boot --image f719bb0e-4bfa-4de6-960e-79a746e9e4bb --flavor 2 --nic net-id=cd147ccf-1ac1-4e47-9d0f-397f8ee8234e --key_name FW1 firewallTest1
+
+  nova --os-username sdnadmin --os-password openstack@123 --insecure boot --image f719bb0e-4bfa-4de6-960e-79a746e9e4bb --flavor 2 --nic net-id=cd147ccf-1ac1-4e47-9d0f-397f8ee8234e --nic net-id=839d0f99-bab5-488a-a6e5-0399f924ccf6 --key_name FW1 firewallTest2
+  
+  
+  
+  [sdnos@fuel ~]$ nova --os-username sdnadmin --os-password openstack@123 --insecure floating-ip-pool-list
++--------------+
+| name         |
++--------------+
+| External_192 |
++--------------+
+[sdnos@fuel ~]$ nova --os-username sdnadmin --os-password openstack@123 --insecure floating-ip-create External_192
++---------------+-----------+----------+--------------+
+| Ip            | Server Id | Fixed Ip | Pool         |
++---------------+-----------+----------+--------------+
+| 192.168.0.123 | -         | -        | External_192 |
++---------------+-----------+----------+--------------+
+[sdnos@fuel ~]$ nova --os-username sdnadmin --os-password openstack@123 --insecure floating-ip-list
++---------------+--------------------------------------+---------------+--------------+
+| Ip            | Server Id                            | Fixed Ip      | Pool         |
++---------------+--------------------------------------+---------------+--------------+
+| 192.168.0.56  | 752b8e6b-1d80-46d0-b5bc-50c3339beb22 | 192.168.10.3  | External_192 |
+| 192.168.0.70  | 2e2947fb-57a2-43d3-83b8-2103c1912878 | 192.168.100.3 | External_192 |
+| 192.168.0.68  | 9b5b7dff-0647-405d-8585-f497f4717643 | 192.168.100.4 | External_192 |
+| 192.168.0.117 | 1941f5f1-3a28-4dc5-8df9-948be80a68cc | 192.168.100.8 | External_192 |
+| 192.168.0.71  | 307599bf-9e34-4fe5-bc46-6d5072cee12e | 192.168.100.5 | External_192 |
+| 192.168.0.58  | 8b3692b9-37ff-43c5-bbfa-78b8fdf8bbfb | 192.168.10.6  | External_192 |
+| 192.168.0.123 | -                                    | -             | External_192 |
+| 192.168.0.79  | e67d59dc-5773-4940-a773-23c472e25551 | 192.168.100.7 | External_192 |
++---------------+--------------------------------------+---------------+--------------+
+[sdnos@fuel ~]$ nova --os-username sdnadmin --os-password openstack@123 --insecure add-floating-ip firewalltest2 192.168.0.123
+nova --os-username sdnadmin --os-password openstack@123 --insecure floating-ip-delete FLOATING_IP_ADDRESS
