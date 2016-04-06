@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.InetAddress;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -17,29 +18,33 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 /**
- * Servlet implementation class EnableRulesServlet
+ * Servlet implementation class DeleteRulesServlet
  */
-@WebServlet("/EnableRulesServlet")
-public class EnableRulesServlet extends HttpServlet {
+@WebServlet("/DeleteRulesServlet")
+public class DeleteRulesServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public EnableRulesServlet() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public DeleteRulesServlet() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		// TODO Auto-generated method stub
+		// response.getWriter().append("Served at:
+		// ").append(request.getContextPath());
 		doPost(request, response);
 	}
-	
-	private  String getRuleIds(String ruleName) {
+
+	private String getRuleIds(String ruleName) {
 		//String host = "192.168.0.68";
 		String host=ConfigReader.getIPValue();
 		String user = "root";
@@ -77,7 +82,7 @@ public class EnableRulesServlet extends HttpServlet {
 							hasName = true;
 							int ruleNostart = line.indexOf("[") + 1;
 							int ruleNoEnd = line.indexOf("]");
-							listRules.append(line.substring(ruleNostart, ruleNoEnd) );
+							listRules.append(line.substring(ruleNostart, ruleNoEnd));
 							// listRules.append(":" +
 							// line.substring(line.indexOf(".name") + 6));
 						}
@@ -101,41 +106,12 @@ public class EnableRulesServlet extends HttpServlet {
 			return "";
 		}
 	}
-	
-	/*public static void main(String args[]){
-		System.out.println(getRuleIds("Block-Mediaplayer"));
-	}*/
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		String rulesEnabledValues=request.getParameter("rulesEnabledValues");
-		System.out.println("Input is:"+rulesEnabledValues);
-		if(rulesEnabledValues.split(":")[0].equals("Media")){
-			String ruleId=getRuleIds("Block-Mediaplayer");
-			rulesEnabledValues=ruleId+":"+rulesEnabledValues.split(":")[1];
-			
-		}
-		if(rulesEnabledValues.split(":")[0].equals("Edu")){
-			String ruleId=getRuleIds("Block-Education");
-			rulesEnabledValues=ruleId+":"+rulesEnabledValues.split(":")[1];
-		}
-		if(rulesEnabledValues.contains("Custom")){
-			String tempRulesEnabledValues="";
-			String rulesAr[]=rulesEnabledValues.split(";");
-			for(String rule : rulesAr){
-				String ruleMap[]=rule.split(":");
-				int nameLen=ruleMap[0].length();
-				String ruleName=ruleMap[0].substring(1, nameLen-1);
-				String ruleId=getRuleIds(ruleName);
-				tempRulesEnabledValues=tempRulesEnabledValues+ruleId+":"+ruleMap[1]+";";
-			}
-			System.out.println("Temporary values :"+ tempRulesEnabledValues);
-			rulesEnabledValues=tempRulesEnabledValues;
-		}
-		
+	public void deleteRules(String ruleIds) {
+		// After deletion rule ids get shifted
+
+		String rulesArray[] = ruleIds.split(":");
+
 		//String host = "192.168.0.68";
 		String host=ConfigReader.getIPValue();
 		String user = "root";
@@ -144,39 +120,44 @@ public class EnableRulesServlet extends HttpServlet {
 		config.put("StrictHostKeyChecking", "no");
 		JSch jsch = new JSch();
 		Channel channel = null;
-		String rulesArray[]=rulesEnabledValues.split(";");
+
 		try {
 			Session session = jsch.getSession(user, host, 22);
 			session.setPassword(password);
 			session.setConfig(config);
 			session.connect();
 			System.out.println("Connected through ssh");
-			for(String rule: rulesArray){
+			String dummyRuleId = "";
+			String firstRuleId = rulesArray[0];
+			for (String ruleId : rulesArray) {
 				channel = session.openChannel("exec");
-				String map[]=rule.split(":");
-				String id=map[0];
-				String value=map[1];
-				String cmd="";
-				if(value.equals("enable")){
-					cmd="uci set firewall.@rule["+id+"].enabled='1'";
-				}else{
-					cmd="uci set firewall.@rule["+id+"].enabled='0'";
-				}
+				String cmd = "uci get firewall.@rule[" + firstRuleId + "].dest_ip";
 				System.out.println(cmd);
 				((ChannelExec) channel).setCommand(cmd);
-				channel.connect();	
+				InputStream outStream = channel.getInputStream();
+				channel.connect();
+				BufferedReader buff = new BufferedReader(new InputStreamReader(outStream));
+				String address = buff.readLine();
+				InetAddress siteDeleted=InetAddress.getByName(address);
+				HostsFileManager.removeHost(siteDeleted);
 				channel.disconnect();
+				
+				
+				channel = session.openChannel("exec");
+				cmd = "uci delete firewall.@rule[" + firstRuleId + "]";
+				System.out.println(cmd);
+				((ChannelExec) channel).setCommand(cmd);
+				channel.connect();
+				channel.disconnect();
+
 			}
-			
 			channel = session.openChannel("exec");
-			String cmd="uci commit firewall";
-			System.out.println(cmd);
+			String cmd = "uci commit firewall";
 			((ChannelExec) channel).setCommand(cmd);
-			InputStream outStream = channel.getInputStream();	
-			System.out.println("Committed");
-			channel.connect();			
+			InputStream outStream = channel.getInputStream();
+			channel.connect();
 			channel.disconnect();
-			
+
 			channel = session.openChannel("exec");
 			//cmd="/etc/init.d/firewall restart";
 			cmd="sh run12_on.sh";
@@ -195,22 +176,51 @@ public class EnableRulesServlet extends HttpServlet {
 				
 			channel.disconnect();
 						
-			
+
 			session.disconnect();
-			
-			
-			
-			
-				
-			
-			
-			
-			
-			
-					
+
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+	}
+
+	/**
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		// TODO Auto-generated method stub
+
+		// TODO Auto-generated method stub
+		String rulesEnabledValues = request.getParameter("rulesEnabledValues");
+		System.out.println("Input is:" + rulesEnabledValues);
+		String tempRulesEnabledValues = "";
+		String rulesAr[] = rulesEnabledValues.split(";");
+		for (String rule : rulesAr) {
+			String ruleMap[] = rule.split(":");
+			int nameLen = ruleMap[0].length();
+			String ruleName = ruleMap[0].substring(1, nameLen - 1);
+			String ruleId = getRuleIds(ruleName);
+			tempRulesEnabledValues = tempRulesEnabledValues+ruleId + ":" + ruleMap[1] + ";";
+		}
+		System.out.println("Temporary values :" + tempRulesEnabledValues);
+		rulesEnabledValues = tempRulesEnabledValues;
+
+		String rulesArray[] = rulesEnabledValues.split(";");
+		StringBuffer ruleIds = new StringBuffer();
+		for (String rule : rulesArray) {
+			String map[] = rule.split(":");
+			String id = map[0];
+			String value = map[1];
+			if (value.equals("enable")) {
+				ruleIds.append("" + id + ":");
+			}
+		}
+		System.out.println("Deleting rule ids: "+ruleIds.toString());
+		deleteRules(ruleIds.toString());
+
 	}
 
 }

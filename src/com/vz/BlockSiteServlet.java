@@ -50,13 +50,15 @@ public class BlockSiteServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		//boolean blockYoutube = Boolean.valueOf(request.getParameter("blockYoutube"));
 		String urlString=request.getParameter("urlStr");
-		String ruleName=request.getParameter("ruleStr");
+		String ruleName="Custom-"+request.getParameter("ruleStr");
 		System.out.println("url: " + urlString);
 		System.out.println("rule name:"+ruleName);
 		//String urlString="https://www.google.co.in";
 		InetAddress address=null;
 		try {
 			address = InetAddress.getByName(new URL(urlString).getHost());
+			HostsFileManager.addHost(address);
+			
 			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
@@ -68,7 +70,9 @@ public class BlockSiteServlet extends HttpServlet {
 		String ip = address.getHostAddress();
 		System.out.println("Ip address of website is:"+ip);
 		
-		String host = "192.168.0.68";
+		//String host = "192.168.0.68";
+		String host=ConfigReader.getIPValue();
+		System.out.println(host);
 		String user = "root";
 		String password = "root";
 		java.util.Properties config = new java.util.Properties();
@@ -146,11 +150,22 @@ public class BlockSiteServlet extends HttpServlet {
 			channel.disconnect();
 			
 			channel = session.openChannel("exec");
-			cmd="/etc/init.d/firewall restart";
+			//cmd="/etc/init.d/firewall restart";
+			cmd="sh run12_on.sh";
+			System.out.println("restarting :"+cmd);
 			((ChannelExec) channel).setCommand(cmd);
-			outStream = channel.getInputStream();			
-			channel.connect();			
+			outStream = channel.getInputStream();
+			channel.connect();		
+			buff = new BufferedReader(new InputStreamReader(outStream));
+			String line = buff.readLine();
+			System.out.println("------Restarting Firewall--------");
+			while(line!=null){
+				System.out.println(line);
+				line = buff.readLine();
+			}	
+				
 			channel.disconnect();
+						
 			
 			
 			session.disconnect();

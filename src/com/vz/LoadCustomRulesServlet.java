@@ -17,16 +17,16 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.Session;
 
 /**
- * Servlet implementation class CheckMediaBlockServlet
+ * Servlet implementation class LoadCustomRules
  */
-@WebServlet("/CheckMediaBlockServlet")
-public class CheckMediaBlockServlet extends HttpServlet {
+@WebServlet("/LoadCustomRulesServlet")
+public class LoadCustomRulesServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public CheckMediaBlockServlet() {
+    public LoadCustomRulesServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -36,7 +36,7 @@ public class CheckMediaBlockServlet extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		//response.getWriter().append("Served at: ").append(request.getContextPath());
 		doPost(request, response);
 	}
 
@@ -62,6 +62,7 @@ public class CheckMediaBlockServlet extends HttpServlet {
 			System.out.println("Connected through ssh");
 			channel = session.openChannel("exec");
 			String cmd = "uci show firewall";
+			System.out.println("Command executed: "+cmd);
 			((ChannelExec) channel).setCommand(cmd);
 			InputStream outStream = channel.getInputStream();
 			channel.connect();
@@ -69,7 +70,7 @@ public class CheckMediaBlockServlet extends HttpServlet {
 			String line = buff.readLine();
 			StringBuffer listRules=new StringBuffer();
 			while (line != null) {
-				
+				System.out.println(line);
 				if(line.contains("=rule")){
 					//Beginning of  a rule
 					System.out.println(line);
@@ -78,7 +79,7 @@ public class CheckMediaBlockServlet extends HttpServlet {
 					boolean hasName=false;
 					while( line!=null && !(line.contains("=rule")) ){
 						//Inside the Rule
-						if(line.contains(".name='Block-Mediaplayer'")){
+						if(line.contains(".name='Custom-")){
 							hasName=true;
 							int ruleNostart=line.indexOf("[")+1;
 							int ruleNoEnd=line.indexOf("]");
@@ -106,8 +107,10 @@ public class CheckMediaBlockServlet extends HttpServlet {
 			}
 			System.out.println("Rules In Firewall : "+ listRules.toString());
 			response.getWriter().write(listRules.toString());
+			
 			channel.disconnect();
 			session.disconnect();
+			
 
 		} catch (Exception e) {
 			e.printStackTrace();

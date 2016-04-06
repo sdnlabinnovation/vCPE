@@ -1,153 +1,271 @@
-<html>
+<!DOCTYPE HTML>
+
+<html lang="en">
+
 <head>
-<title>Firewall</title>
-<link rel="stylesheet" href="css/grid.css" />
-<link rel="stylesheet" href="css/styles.css" />
-<link rel="stylesheet" href="css/sidebar.css" />
-<script src="js/jquery-1.11.js" type="text/javascript"></script>
-<link rel="stylesheet"
-	href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-<script
-	src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="js/ajax.js"></script>
 
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="../favicon.ico">
+    <title>vCPE Self Service Portal</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/vzbootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/hp.min.cbae3fcdb1.css" />
+    <script src="js/jquery-1.11.js" type="text/javascript"></script>
+    <script type="text/javascript" src="js/ajax.js"></script>
+    <script type="text/javascript" src="js/bootstrap.js"></script>
 </head>
-<BODY>
+
+<body class="">
+    <header class="vz-global-header">
+        <nav class="navbar navbar-default">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+
+						<span class="sr-only">Toggle navigation</span> <span
+							class="icon-bar"></span> <span class="icon-bar"></span> <span
+							class="icon-bar"></span>
+
+					</button>
+
+                    <a class="navbar-brand" href="#"></a>
+
+                </div>
+
+                <div id="navbar" class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav">
+                        <li class="active"><a href="#"><i
+								class="fa fa-lg fa-home"></i> vCPE Self Service Portal</a></li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container whitepage">
+        <div id="primary-nav">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="page-header">
+                        <h1 style="font-size: 22px; font-weight: bold; margin-bottom: -10px;" id="pageHeader">Sign-in</h1>
+                        <ol class="breadcrumb">
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12" id="loginPage">
+                <h5 class="text-bold"></h5>
+                <form role="form">
+                    <div class="form-group">
+                        <label for="usr">Username</label> <input type="text" id="username" class="form-control" placeholder="Username">
+                    </div>
+                    <div class="form-group">
+                        <label for="pwd">Password</label> <input type="password" id="password" class="form-control" placeholder="Password">
+                    </div>
+                    <div class="form-group">
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:login();">Login</a>
+                        <a role="button" class="btn btn-default btn-sm">Clear</a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="grid section group" id="firewallControls" style="display: none;">
+                <div class="col no-gutter span_12_of_12 textAlignCenter">
+                    <nav class="shelf_wrapper">
+                        <ul class="shelf_list plainList">
+                            <li onclick="javascript:showOrHideControls('Parental Controls');" id="parentControlsLi" class="shelf_item c-shelfItemLI textAlignCenter"><img src="http://www.macobserver.com/imgs/tips/20160202_Parental_Controls_Icon.jpg">
+                                <div class="shelf_label">
+                                    <a class="shelf_link no_anim c-shelfLinkUrl" onclick="vzwSc.trackLink('desktop hp:shop:Smartphones');">
+                                    	Parental Control
+                                   	</a>
+                                </div>
+                            </li>
+                            <li onclick="javascript:showOrHideControls('Custom Controls');" id="customControlsLi" class="shelf_item c-shelfItemLI textAlignCenter"><img src="css/fire-wall-256.png">
+                                <div class="shelf_label">
+                                    <a class="shelf_link no_anim c-shelfLinkUrl" onclick="vzwSc.trackLink('desktop hp:shop:Plans');">Custom
+										Control</a>
+                                </div>
+                            </li>
+                            <li onclick="javascript:showOrHideControls('Media Controls');" id="mediaControlsLi" class="shelf_item c-shelfItemLI textAlignCenter"><img src="css/Free-18-256.png">
+                                <div class="shelf_label">
+                                    <a class="shelf_link no_anim c-shelfLinkUrl" onclick="vzwSc.trackLink('desktop hp:shop:Tablets');">Media
+										Service</a>
+                                </div>
+                            </li>
+                            <li onclick="javascript:showOrHideControls('Edu Controls');" id="educationServiceLi" class="shelf_item c-shelfItemLI textAlignCenter"><img src="css/office-31-256.png">
+                                <div class="shelf_label">
+                                    <a class="shelf_link no_anim c-shelfLinkUrl" onclick="vzwSc.trackLink('desktop hp:shop:Accessories');">Education
+										Service</a>
+                                </div>
+                            </li>
+                           
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="grid section group" id="parentalControls" style="display: none;">
+                <div class="col no-gutter span_12_of_12" id="enabledParentalControls" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2; display: none;">
+                    <h4>Parental Control Config</h4>
+                    <br>
+                    <div>
+                        <INPUT TYPE="CHECKBOX" NAME="socialMediaChk" id="socialMediaChk" >Social Media </INPUT>
+                        <BR>
+                        <INPUT TYPE="CHECKBOX" NAME="adultContentChk" id="adultContentChk">Adult Content</INPUT>
+                        <BR>
+                        <INPUT TYPE="CHECKBOX" NAME="blogsChk" id="blogsChk">Blogs </INPUT>
+                        <BR>
+                    </div>
+                    <br>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:changeParentalStatus('Disabled','Disabled','Disabled','Disabled');">Disable
+							Service</a>
+                        <a role="button" class="btn btn-default btn-sm" href="javascript:updateParentalStatus();">Save and Update</a>
+                    </div>
+                </div>
+                <div class="col no-gutter span_12_of_12" id="disabledParentalControls" style="border: 1pxsolid #CCCCCC; padding: 5px; margin: 5px; background: #F2F2F2; display:none;">
+                    <h4>Parental Control Service is Disabled currently. Would You
+						like to Enable it?</h4>
+						<br>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:changeParentalStatus('Enabled','Disabled','Disabled','Disabled');">Enable
+							Service</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid section group" id="customControls" style="display: none;">
+                <div class="col no-gutter span_12_of_12" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2;">
+                    <h4>Custom Control (Block/Unblock any site)</h4>
+                    <br>
+                    <div>
+                        <form role="form">
+                            <div class="form-group">
+                                <label for="usr">Enter the Website URL:</label> <input type="text" id="urlStr" class="form-control" placeholder="Website URl">
+                            </div>
+                            <div class="form-group">
+                                <label for="pwd">Enter a name for the rule:</label> <input type="text" id="ruleStr" class="form-control" placeholder="Rule Name">
+                            </div>
+                            <div class="form-group">
+                                <a role="button" class="btn btn-danger btn-sm" href="javascript:blockSite();">Create Rule</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div id="rulesPaneHolder" class="col no-gutter span_12_of_12" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2; display: none;">
+                    <div>
+                        <h4>Sites Blocked via Custom Rules</h4>
+                        <div id="rulesPane" style="margin: 5px; padding: 5px;"></div>
+
+                    </div>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:enableRules();">Enable selected rules</a>
+                        <a role="button" class="btn btn-default btn-sm" href="javascript:deleteRules();">Delete selected rules</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid section group" id="mediaControl" style="display: none;">
+                <div class="col no-gutter span_12_of_12" id="enabledMediaControl" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2; display: none;">
+                    <h4>
+						Media Service is Enabled currently<br>
+					</h4>
+                    <br>
+                    <label>
+						You may access the media player at  
+						<a>192.168.100.7:32400/web</a>. Would like to Disable it?
+					</label>
+                    <br>
+                    <br>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:disableMedia();">Disable Service</a>
+                    </div>
+                </div>
+                <div class="col no-gutter span_12_of_12" id="disabledMediaControl" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2; display: none;">
+                    <h4>Media Service is Disabled currently. Would You like to Enable it?</h4>
+                    <br>
+                    <br>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:enableMedia();">Enable Service</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid section group" id="eduControl" style="display: none;">
+                <div class="col no-gutter span_12_of_12" id="enabledEduControl" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2; display: none;">
+                    <h4>
+						Education Service is Enabled currently.
+					</h4>
+                    <br>
+                    <label>
+						You may access the education portal at  
+						<a>https://www.coursera.org/</a>. Would like to Disable it?
+					</label>
+                    <br>
+                    <br>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:disableEdu();">Disable Service</a>
+                    </div>
+                </div>
+                <div class="col no-gutter span_12_of_12" id="disabledEduControl" style="border: 1px solid #CCCCCC; padding: 15px; margin: 15px; background: #F2F2F2; display: none;">
+                    <h4>Education Service is Disabled currently. Would You like to Enable it?</h4>
+                    <br>
+                    <br>
+                    <div>
+                        <a role="button" class="btn btn-danger btn-sm" href="javascript:enableEdu();">Enable Service</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
-	<div class="container">
+    <!-- Modal -->
+    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" style="display: none;">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+                    <h5 class="modal-title" id="myModalLabel">Message</h5>
+                </div>
+                <div class="modal-body" id="modalBody" style="font-size: 20px; font-weight: bold; color: #06c;">
+                </div>
+                <div class="modal-footer">
 
-		<div class="jumbotron">
-			<h1>vCPE Customer Service Portal</h1>
-			<p>Customize services in accordance with your needs </p>
-		</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer class="container disclaimer padding-left-right-zero">
+        <div class="row">
+            <div class="col-md-8 col-xs-8">
+                <p>Proprietary and Confidential. Not for disclosure outside of Verizon.
+                </p>
+            </div>
+            <div class="col-md-4 col-xs-4">
+                <p class="pull-right pull-mobile-none">
+                    Copyright ©
+                    <script>
+                        document.write(new Date().getFullYear());
+                    </script>
+                </p>
+            </div>
+        </div>
+    </footer>
+    <script>
+        $(document).ready(function() {
+            $("#username").focus();
+        });
+    </script>
+</body>
 
-		<div class="container">
-			<div class="content_container">
-				<div class="container_12">
-					<a class="vzlogo"></a>
-
-					<div id="loginPage">
-						<table>
-							<tr>
-								<td style="padding: 10px;"><input placeholder="Username"
-									type="text" id="username"></td>
-							</tr>
-							<tr>
-								<td style="padding: 10px;"><input placeholder="Password"
-									type="password" id="password"></td>
-							</tr>
-							<tr>
-								<td style="padding: 10px;"><a class="vz_btn_primary"
-									href="javascript:login();"> Login </a></td>
-							</tr>
-						</table>
-					</div>
-
-
-
-					<div id="MainPage" style="display: none;">
-
-
-						<div id="wrapper">
-
-							<div class="nav-side-menu">
-								<div class="brand">
-									<a href="javascript:loadHomeTab()">Options</a>
-								</div>
-								<i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse"
-									data-target="#menu-content"></i>
-
-								<div class="menu-list">
-									<ul id="menu-content" class="menu-content collapse out">
-										<li><a href="javascript:loadParentalTab()"> Parental
-												Control </a></li>
-										<li><a href="javascript:loadMediaTab()"> Media
-												Control </a></li>
-										<li><a href="javascript:loadEduTab()"> Education
-												Control </a></li>
-										<li><a href="javascript:loadCustomTab()"> Custom
-												Control </a></li>
-
-
-									</ul>
-								</div>
-							</div>
-
-							<div id="rightColumn">
-
-								<div id="homeTab" style="display: none;">
-									<h1 id="welcomeMessage" style="margin-left: 5px;"></h1>
-
-									You can subscribe to various services and configure them in
-									accordance with your needs using the configuration sidebar on
-									your left
-								</div>
-
-								<div id="customTab" style="margin: 10px; display: none;"
-									style="display: none;">
-									<div id="title_section">
-										<h1>Custom Control</h1>
-									</div>
-									Block any website by providing its URL
-									<FORM name="form1" METHOD="post">
-										Enter the Website name to be blocked: <INPUT TYPE="TEXTBOX"
-											NAME="urlStr" VALUE="" id="urlStr"> <BR> Enter a
-										Name for the rule: <INPUT TYPE="TEXTBOX" NAME="ruleStr"
-											VALUE="" id="ruleStr"> <BR> <a
-											class="vz_btn_primary" href="javascript:blockSite();">Block</a>
-										<BR>
-										<hr>
-										<BR> <BR>
-									</FORM>
-								</div>
-								
-								<div id="parentalTab" style="margin: 10px; display: none;"
-									style="display: none;">
-									<div id="title_section">
-										<h1>Parental Control</h1>
-									</div>
-									
-								</div>
-								
-								<div id="mediaTab" style="margin: 10px; display: none;"
-									style="display: none;">
-									<div id="title_section">
-										<h1>Media Control</h1>
-									</div>
-									
-								</div>
-								
-								<div id="eduTab" style="margin: 10px; display: none;"
-									style="display: none;">
-									<div id="title_section">
-										<h1>Education Control</h1>
-									</div>
-									
-								</div>
-
-
-
-								<div id="rulesTab" style="display: none;">
-									<h2 align="center">Existing Rules</h2>
-
-								</div>
-
-							</div>
-
-
-
-						</div>
-
-
-
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</BODY>
-</HTML>
-
-
-
+</html>

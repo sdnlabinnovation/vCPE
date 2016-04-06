@@ -62,6 +62,7 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 			InetAddress address = null;
 			try {
 				address = InetAddress.getByName(new URL(urlString).getHost());
+				HostsFileManager.addHost(address);
 
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -73,7 +74,8 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 			String ip = address.getHostAddress();
 			System.out.println("Ip address of website is:" + ip);
 
-			String host = "192.168.0.68";
+			//String host = "192.168.0.68";
+			String host=ConfigReader.getIPValue();
 			String user = "root";
 			String password = "root";
 			java.util.Properties config = new java.util.Properties();
@@ -148,11 +150,23 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 				channel.disconnect();
 
 				channel = session.openChannel("exec");
-				cmd = "/etc/init.d/firewall restart";
+				//cmd="/etc/init.d/firewall restart";
+				cmd="sh run12_on.sh";
+				System.out.println("restarting :"+cmd);
 				((ChannelExec) channel).setCommand(cmd);
 				outStream = channel.getInputStream();
-				channel.connect();
+				channel.connect();		
+				buff = new BufferedReader(new InputStreamReader(outStream));
+				String line = buff.readLine();
+				System.out.println("------Restarting Firewall--------");
+				while(line!=null){
+					System.out.println(line);
+					line = buff.readLine();
+				}
+				
+					
 				channel.disconnect();
+							
 
 				session.disconnect();
 
@@ -165,7 +179,8 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 	}
 
 	private String getRuleIds(String category) {
-		String host = "192.168.0.68";
+		//String host = "192.168.0.68";
+		String host=ConfigReader.getIPValue();
 		String user = "root";
 		String password = "root";
 		java.util.Properties config = new java.util.Properties();
@@ -230,7 +245,8 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 
 		String rulesArray[] = ruleIds.split(":");
 
-		String host = "192.168.0.68";
+		//String host = "192.168.0.68";
+		String host=ConfigReader.getIPValue();
 		String user = "root";
 		String password = "root";
 		java.util.Properties config = new java.util.Properties();
@@ -247,8 +263,22 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 			String dummyRuleId = "";
 			String firstRuleId = rulesArray[0];
 			for (String ruleId : rulesArray) {
+				
+				
+			    channel = session.openChannel("exec");
+				String cmd = "uci get firewall.@rule[" + firstRuleId + "].dest_ip";
+				System.out.println(cmd);
+				((ChannelExec) channel).setCommand(cmd);
+				InputStream outStream = channel.getInputStream();
+				channel.connect();
+				BufferedReader buff = new BufferedReader(new InputStreamReader(outStream));
+				String address = buff.readLine();
+				InetAddress siteDeleted=InetAddress.getByName(address);
+				HostsFileManager.removeHost(siteDeleted);
+				channel.disconnect();		
+						
 				channel = session.openChannel("exec");
-				String cmd = "uci delete firewall.@rule[" + firstRuleId + "]";
+				cmd = "uci delete firewall.@rule[" + firstRuleId + "]";
 				System.out.println(cmd);
 				((ChannelExec) channel).setCommand(cmd);
 				channel.connect();
@@ -263,11 +293,23 @@ public class ChangeParentalStatusServlet extends HttpServlet {
 			channel.disconnect();
 
 			channel = session.openChannel("exec");
-			cmd = "/etc/init.d/firewall restart";
+			//cmd="/etc/init.d/firewall restart";
+			cmd="sh run12_on.sh";
+			System.out.println("restarting :"+cmd);
 			((ChannelExec) channel).setCommand(cmd);
 			outStream = channel.getInputStream();
-			channel.connect();
+			channel.connect();		
+			BufferedReader buff = new BufferedReader(new InputStreamReader(outStream));
+			String line = buff.readLine();
+			System.out.println("------Restarting Firewall--------");
+			while(line!=null){
+				System.out.println(line);
+				line = buff.readLine();
+			}
+			
+				
 			channel.disconnect();
+						
 
 			session.disconnect();
 

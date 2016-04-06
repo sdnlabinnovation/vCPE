@@ -44,13 +44,14 @@ public class CheckParentalStatusServlet extends HttpServlet {
 		StringBuffer responseString = new StringBuffer();
 		System.out.println("Checking Parental Status");
 		if (ConfigReader.getParentalControlEnableValue().equals("Enabled")) {
+			System.out.println("Found parental status enabled");
 			responseString.append("Parental:Enabled;");
 			String category = "SocialMedia";
 			if (ConfigReader.getSocialMediaEnableValue().equals("Enabled")) {
-
+				System.out.println("Found social media enabled");
 				responseString.append("SocialMedia:Enabled;");
 			} else {
-
+				System.out.println("Found social media disabled");
 				responseString.append("SocialMedia:Disabled;");
 			}
 
@@ -77,6 +78,7 @@ public class CheckParentalStatusServlet extends HttpServlet {
 		}
 
 		// If ParentalControl Not Enabled
+		System.out.println("Found parental status disabled");
 		response.getWriter().write("Parental:Disabled;SocialMedia:Disabled;AdultContent:Disabled;Blogs:Disabled;");
 
 	}
